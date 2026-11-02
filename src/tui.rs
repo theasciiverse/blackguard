@@ -4,9 +4,10 @@ use std::time::{Duration, Instant};
 
 use anyhow::Result;
 use ratatui::DefaultTerminal;
-use ratatui::crossterm::event::{self, Event, KeyEventKind};
+use ratatui::crossterm::event::{self, Event, KeyCode, KeyEventKind, KeyModifiers};
 
 use crate::app::App;
+use crate::logging;
 use crate::ui;
 
 /// Set up the terminal, run the loop, and always restore on the way out —
@@ -22,7 +23,9 @@ pub fn run(mut app: App) -> Result<()> {
 
 fn event_loop(terminal: &mut DefaultTerminal, app: &mut App) -> Result<()> {
     let mut last = Instant::now();
+    let mut watch = logging::Watch::new();
     while !app.should_quit {
+        watch.observe(app);
         let now = Instant::now();
         let elapsed = now - last;
         last = now;
@@ -37,13 +40,24 @@ fn event_loop(terminal: &mut DefaultTerminal, app: &mut App) -> Result<()> {
             Duration::from_millis(200)
         };
         if event::poll(timeout)? {
-            if let Event::Key(key) = event::read()? {
+            let ev = event::read()?;
+            logging::input(&ev);
+            if let Event::Key(key) = ev {
                 if key.kind == KeyEventKind::Press {
-                    app.on_key(key.code);
+                    // Ctrl+C quits like q (Asciiverse); in raw mode it is a key
+                    if key.code == KeyCode::Char('c')
+                        && key.modifiers.contains(KeyModifiers::CONTROL)
+                    {
+                        app.should_quit = true;
+                    } else {
+                        app.on_key(key.code);
+                    }
                 }
             }
         }
     }
+    watch.observe(app);
+    log::info!("quit");
     Ok(())
 }
 
