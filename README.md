@@ -1,3 +1,13 @@
+> **Play it with Asciiverse.** With [av](https://asciiverse.sh), the Asciiverse
+> client:
+>
+> ```
+> av install blackguard
+> av play blackguard
+> ```
+>
+> The original README follows.
+
 # Blackguard
 
 A beautiful terminal implementation of **[Scoundrel](http://stfj.net/art/2011/Scoundrel.pdf)** — the

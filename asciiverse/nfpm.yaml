@@ -1,0 +1,37 @@
+# System packages (.deb, .rpm, .apk, Arch) for Blackguard, built by nfpm
+# from the same static binary as the av archive. The release workflow sets
+# VERSION, RELEASE (our packaging release) and ARCH (amd64 or arm64), and
+# leaves the binary at target/release/blackguard.
+#
+# No .desktop file on purpose: av is the one place titles are started from,
+# so Asciiverse packages never add menu entries (asciiverse/CLAUDE.md).
+name: blackguard
+arch: ${ARCH}
+platform: linux
+version: ${VERSION}
+release: ${RELEASE}
+section: games
+priority: optional
+maintainer: Asciiverse <packages@asciiverse.sh>
+vendor: Asciiverse
+homepage: https://github.com/theasciiverse/blackguard
+license: MIT
+description: |
+  Scoundrel, the solo card roguelike, in the terminal.
+  The deck is the dungeon: black cards are monsters, diamonds are weapons
+  that dull with every kill, hearts are potions. Clear all 44 cards to
+  win. Seeded and daily dungeons. By Elnur Badalov, after the game by
+  Zach Gage and Kurt Bieg, packaged by Asciiverse.
+contents:
+  - src: target/release/blackguard
+    dst: /usr/bin/blackguard
+    file_info: { mode: 0755 }
+  - src: LICENSE
+    dst: /usr/share/doc/blackguard/copyright
+    file_info: { mode: 0644 }
+  - src: README.md
+    dst: /usr/share/doc/blackguard/README.md
+    file_info: { mode: 0644 }
+  - src: PATCHES.md
+    dst: /usr/share/doc/blackguard/PATCHES.md
+    file_info: { mode: 0644 }
